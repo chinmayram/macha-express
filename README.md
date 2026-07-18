@@ -2,6 +2,11 @@
 
 > **Fast, fresh, and hygienic fish delivery right to your doorstep in Balasore, Odisha.**
 
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Experience_Macha_Express-00C853?style=for-the-badge&logo=vercel&logoColor=white)](https://macha-express.vercel.app)
+[![GitHub License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+
+🔗 **Explore Live Demo**: [https://macha-express.vercel.app](https://macha-express.vercel.app)
+
 Macha Express (মাছ Express) is a full-stack e-commerce web and mobile platform tailored for ordering fresh daily catches, local freshwater fish, and premium seafood. Built with a modern React frontend, Express.js REST API backend, SQLite persistence, Razorpay payment gateway, and Android support via Capacitor.
 
 ---

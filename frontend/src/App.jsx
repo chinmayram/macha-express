@@ -76,12 +76,17 @@ export default function App() {
         }
       } catch (err) {
         console.error('Failed to load products from server, using local fallbacks', err);
-        // Fallback placeholder catalog in case backend isn't up yet
         setProducts([
-          { id: 1, name: 'Fresh Ilishi (Hilsa)', description: 'Premium silver hilsa caught fresh, known for its signature rich taste.', price_per_kg: 1250, image_url: 'ilishi', category: 'Premium Fish' },
-          { id: 2, name: 'Chilika Tiger Chingudi (Prawns)', description: 'Large sweet tiger prawns sourced from Chilika waters.', price_per_kg: 550, image_url: 'chingudi', category: 'Prawns & Crabs' },
-          { id: 3, name: 'Fresh Ruhi (Rohu)', description: 'Local freshwater Rohu, perfect for traditional Odia Besara curry.', price_per_kg: 240, image_url: 'ruhi', category: 'Freshwater Fish' },
-          { id: 4, name: 'Kankada (Mud Crabs)', description: 'Live mud crabs with firm meat, sourced from Balasore creeks.', price_per_kg: 600, image_url: 'kankada', category: 'Prawns & Crabs' }
+          { id: 1, name: 'Fresh Chuna Macha (Small Fish)', description: 'Tiny sweetwater silver fish, rich in nutrients. A beloved Odia staple for Chuna Macha Besara or crispy dry fry.', price_per_kg: 180, image_url: 'chuna', category: 'Freshwater Fish' },
+          { id: 2, name: 'Fresh Ilishi (Hilsa)', description: 'Premium silver hilsa caught fresh from the Bay of Bengal, known for its rich oily texture and signature aroma.', price_per_kg: 1250, image_url: 'ilishi', category: 'Premium Fish' },
+          { id: 3, name: 'Chilika Tiger Chingudi (Prawns)', description: 'Large sweet tiger prawns sourced directly from Chilika waters.', price_per_kg: 550, image_url: 'chingudi', category: 'Prawns & Crabs' },
+          { id: 4, name: 'Fresh Ruhi (Rohu)', description: 'Local sweetwater Rohu, perfect for traditional Odia Macha Besara curry.', price_per_kg: 240, image_url: 'ruhi', category: 'Freshwater Fish' },
+          { id: 5, name: 'Kankada (Mud Crabs)', description: 'Live mud crabs with firm, sweet meat, sourced from Balasore creeks.', price_per_kg: 600, image_url: 'kankada', category: 'Prawns & Crabs' },
+          { id: 6, name: 'White Pomfret', description: 'Premium sea-fresh White Pomfret, cleaned and ready for frying or grilling.', price_per_kg: 780, image_url: 'pomfret', category: 'Premium Fish' },
+          { id: 7, name: 'Bhakura (Catla)', description: 'Freshly harvested local Catla fish. Thick steaks, excellent for rich spicy curries.', price_per_kg: 260, image_url: 'bhakura', category: 'Freshwater Fish' },
+          { id: 8, name: 'Fresh Bhetki (Barramundi)', description: 'Mildly flavored white flaky fish, boneless fillets available. Ideal for Macha Bhaja or fish fingers.', price_per_kg: 680, image_url: 'bhetki', category: 'Premium Fish' },
+          { id: 9, name: 'Pohala Macha (Small Carp)', description: 'Fresh local Pohala fish, soft texture and delicious in mustard gravy.', price_per_kg: 220, image_url: 'ruhi', category: 'Freshwater Fish' },
+          { id: 10, name: 'Pabda Macha (Butterfish)', description: 'Delicate butterfish with sweet soft meat, great for lightweight home curry.', price_per_kg: 580, image_url: 'bhetki', category: 'Freshwater Fish' }
         ]);
       }
 

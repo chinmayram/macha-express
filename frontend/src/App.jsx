@@ -15,7 +15,8 @@ import {
   Lock, 
   Phone,
   ShieldCheck,
-  AlertTriangle
+  AlertTriangle,
+  Database
 } from 'lucide-react';
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [mockPaymentModal, setMockPaymentModal] = useState(null); // stores order payment context for mock UI
+  const [adminTab, setAdminTab] = useState('orders'); // 'orders', 'products', 'users'
 
   // Local Balasore Landmark Locations
   const BALASORE_NEIGHBORHOODS = [
@@ -617,6 +619,10 @@ export default function App() {
               <History />
               <span>Orders</span>
             </button>
+            <button className={`nav-item ${view === 'admin' ? 'active' : ''}`} onClick={() => setView('admin')}>
+              <Database />
+              <span>DB Admin</span>
+            </button>
           </div>
         </>
       )}
@@ -892,6 +898,10 @@ export default function App() {
               <History />
               <span>Orders</span>
             </button>
+            <button className={`nav-item ${view === 'admin' ? 'active' : ''}`} onClick={() => setView('admin')}>
+              <Database />
+              <span>DB Admin</span>
+            </button>
           </div>
         </>
       )}
@@ -981,6 +991,187 @@ export default function App() {
 
             <button className="btn-primary" onClick={() => setView('home')} style={{ width: '100%', marginTop: '8px' }}>
               Back to Marketplace
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 8. DB Admin Dashboard View */}
+      {view === 'admin' && (
+        <div className="screen">
+          <div className="back-btn-container">
+            <button className="circle-btn" onClick={() => setView('home')}>
+              <ArrowLeft size={18} />
+            </button>
+            <h3 style={{ fontSize: '18px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Database size={18} color="#0ea5e9" /> DB Admin Dashboard
+            </h3>
+          </div>
+
+          <div style={{ padding: '16px 20px', flexGrow: 1, overflowY: 'auto' }}>
+            {/* Database Metrics Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div className="glass-panel" style={{ padding: '12px 14px', borderLeft: '4px solid #0ea5e9' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Total DB Orders</span>
+                <h4 style={{ fontSize: '20px', margin: '4px 0 0 0', color: '#fff' }}>{orders.length}</h4>
+              </div>
+              <div className="glass-panel" style={{ padding: '12px 14px', borderLeft: '4px solid #10b981' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Total Revenue</span>
+                <h4 style={{ fontSize: '20px', margin: '4px 0 0 0', color: '#10b981' }}>
+                  ₹{orders.reduce((sum, o) => sum + (o.total_amount || 0), 0)}
+                </h4>
+              </div>
+              <div className="glass-panel" style={{ padding: '12px 14px', borderLeft: '4px solid #f59e0b' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Fish Catalog Items</span>
+                <h4 style={{ fontSize: '20px', margin: '4px 0 0 0', color: '#fff' }}>{products.length}</h4>
+              </div>
+              <div className="glass-panel" style={{ padding: '12px 14px', borderLeft: '4px solid #ec4899' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Active User Session</span>
+                <h4 style={{ fontSize: '14px', margin: '4px 0 0 0', color: '#fff', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                  {user ? user.name : 'Guest'}
+                </h4>
+              </div>
+            </div>
+
+            {/* DB Table Selector Tabs */}
+            <div className="categories-container" style={{ padding: '0 0 16px 0' }}>
+              <button 
+                className={`category-chip ${adminTab === 'orders' ? 'active' : ''}`}
+                onClick={() => setAdminTab('orders')}
+              >
+                📋 Orders Table ({orders.length})
+              </button>
+              <button 
+                className={`category-chip ${adminTab === 'products' ? 'active' : ''}`}
+                onClick={() => setAdminTab('products')}
+              >
+                🐟 Products Table ({products.length})
+              </button>
+              <button 
+                className={`category-chip ${adminTab === 'users' ? 'active' : ''}`}
+                onClick={() => setAdminTab('users')}
+              >
+                👤 Users Table ({user ? 1 : 0})
+              </button>
+            </div>
+
+            {/* ORDERS TABLE VIEW */}
+            {adminTab === 'orders' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Table: `orders`</h4>
+                {orders.length === 0 ? (
+                  <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No orders in database yet. Place an order from the shop to test!
+                  </div>
+                ) : (
+                  orders.map(order => (
+                    <div key={order.id} className="glass-panel" style={{ padding: '14px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '12px' }}>
+                        <strong style={{ color: '#0ea5e9' }}>Order #{order.id}</strong>
+                        <span style={{ 
+                          padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold',
+                          backgroundColor: order.status === 'DELIVERED' ? 'rgba(16,185,129,0.2)' : 'rgba(14,165,233,0.2)',
+                          color: order.status === 'DELIVERED' ? '#10b981' : '#0ea5e9'
+                        }}>
+                          {order.status}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                        <strong>Customer:</strong> {user?.name} ({user?.phone})
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                        <strong>Address:</strong> {order.delivery_address}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#fff' }}>Amount: ₹{order.total_amount}</span>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <button 
+                            className="btn-secondary" 
+                            style={{ padding: '4px 8px', fontSize: '11px' }}
+                            onClick={() => {
+                              const nextStatus = order.status === 'ORDERED' ? 'PREPARING' :
+                                                 order.status === 'PREPARING' ? 'OUT_FOR_DELIVERY' :
+                                                 order.status === 'OUT_FOR_DELIVERY' ? 'DELIVERED' : 'ORDERED';
+                              setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: nextStatus } : o));
+                            }}
+                          >
+                            Advance Status ➔
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* PRODUCTS TABLE VIEW */}
+            {adminTab === 'products' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Table: `products`</h4>
+                {products.map(p => (
+                  <div key={p.id} className="glass-panel" style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className={`fish-art ${p.image_url}`} style={{ width: '48px', height: '48px', borderRadius: '10px', flexShrink: 0 }}></div>
+                    <div style={{ flexGrow: 1, minWidth: 0 }}>
+                      <h5 style={{ fontSize: '13px', margin: 0, color: '#fff', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        [{p.id}] {p.name}
+                      </h5>
+                      <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{p.category}</span>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <strong style={{ fontSize: '13px', color: '#10b981', display: 'block' }}>₹{p.price_per_kg}/kg</strong>
+                      <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>Stock: {p.stock_kg || 50}kg</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* USERS TABLE VIEW */}
+            {adminTab === 'users' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h4 style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Table: `users`</h4>
+                {user ? (
+                  <div className="glass-panel" style={{ padding: '16px' }}>
+                    <div style={{ fontSize: '13px', color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}>
+                      ID #{user.id || 101} - {user.name}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                      📱 Phone: +91 {user.phone}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                      📍 Address: {user.address || 'Balasore City'}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="glass-panel" style={{ padding: '16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No active user logged in.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Bottom navigation */}
+          <div className="nav-bar">
+            <button className="nav-item" onClick={() => setView('home')}>
+              <ShoppingBag />
+              <span>Shop</span>
+            </button>
+            <button className="nav-item" onClick={() => setView('cart')}>
+              <div className="nav-badge-container">
+                <ShoppingCart />
+                {cart.length > 0 && <span className="nav-badge">{cart.reduce((s,i)=>s+i.quantity_kg,0)}kg</span>}
+              </div>
+              <span>Cart</span>
+            </button>
+            <button className="nav-item" onClick={() => setView('history')}>
+              <History />
+              <span>Orders</span>
+            </button>
+            <button className="nav-item active" onClick={() => setView('admin')}>
+              <Database />
+              <span>DB Admin</span>
             </button>
           </div>
         </div>

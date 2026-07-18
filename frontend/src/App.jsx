@@ -1120,7 +1120,22 @@ export default function App() {
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <strong style={{ fontSize: '13px', color: '#10b981', display: 'block' }}>₹{p.price_per_kg}/kg</strong>
-                      <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>Stock: {p.stock_kg || 50}kg</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                        <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>Stock: {p.stock_kg || 50}kg</span>
+                        <button 
+                          className="btn-secondary" 
+                          style={{ padding: '2px 6px', fontSize: '10px' }}
+                          onClick={() => {
+                            const val = prompt(`Enter new price/kg for ${p.name}:`, p.price_per_kg);
+                            if (val && !isNaN(val)) {
+                              const newPrice = Number(val);
+                              setProducts(prev => prev.map(item => item.id === p.id ? { ...item, price_per_kg: newPrice } : item));
+                            }
+                          }}
+                        >
+                          ✏️ Edit
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

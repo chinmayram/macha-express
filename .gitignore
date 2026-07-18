@@ -1,0 +1,26 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Backend
+backend/.env
+backend/macha_express.db
+backend/macha_express.db-journal
+
+# Frontend Build & Capacitor
+frontend/dist/
+frontend/node_modules/
+.DS_Store
+
+# Android Studio / Gradle
+frontend/android/.gradle
+frontend/android/app/build/
+frontend/android/local.properties
+frontend/android/.idea/workspace.xml
+frontend/android/.idea/tasks.xml
+frontend/android/.idea/gradle.xml
+frontend/android/.idea/assetWizardSettings.xml
+frontend/android/.idea/dictionaries
+frontend/android/.idea/libraries
+frontend/android/.idea/caches

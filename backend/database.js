@@ -101,7 +101,7 @@ export const initDatabase = async () => {
       {
         name: 'Fresh Ilishi (Hilsa)',
         description: 'Premium silver hilsa caught fresh from the Bay of Bengal, known for its rich oily texture and signature aroma.',
-        price_per_kg: 1250,
+        price_per_kg: 1500,
         image_url: 'ilishi',
         category: 'Premium Fish',
         stock_kg: 50

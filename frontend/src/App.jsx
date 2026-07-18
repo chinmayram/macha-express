@@ -80,7 +80,7 @@ export default function App() {
         console.error('Failed to load products from server, using local fallbacks', err);
         setProducts([
           { id: 1, name: 'Fresh Chuna Macha (Small Fish)', description: 'Tiny sweetwater silver fish, rich in nutrients. A beloved Odia staple for Chuna Macha Besara or crispy dry fry.', price_per_kg: 180, image_url: 'chuna', category: 'Freshwater Fish' },
-          { id: 2, name: 'Fresh Ilishi (Hilsa)', description: 'Premium silver hilsa caught fresh from the Bay of Bengal, known for its rich oily texture and signature aroma.', price_per_kg: 1250, image_url: 'ilishi', category: 'Premium Fish' },
+          { id: 2, name: 'Fresh Ilishi (Hilsa)', description: 'Premium silver hilsa caught fresh from the Bay of Bengal, known for its rich oily texture and signature aroma.', price_per_kg: 1500, image_url: 'ilishi', category: 'Premium Fish' },
           { id: 3, name: 'Chilika Tiger Chingudi (Prawns)', description: 'Large sweet tiger prawns sourced directly from Chilika waters.', price_per_kg: 550, image_url: 'chingudi', category: 'Prawns & Crabs' },
           { id: 4, name: 'Fresh Ruhi (Rohu)', description: 'Local sweetwater Rohu, perfect for traditional Odia Macha Besara curry.', price_per_kg: 240, image_url: 'ruhi', category: 'Freshwater Fish' },
           { id: 5, name: 'Kankada (Mud Crabs)', description: 'Live mud crabs with firm, sweet meat, sourced from Balasore creeks.', price_per_kg: 600, image_url: 'kankada', category: 'Prawns & Crabs' },

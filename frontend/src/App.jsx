@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ShoppingBag, 
   ShoppingCart, 
@@ -30,10 +30,153 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [detailQuantity, setDetailQuantity] = useState(1.0); // in kg
   
-  // Delivery details
+  // Delivery & Map Location details
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliverySlot, setDeliverySlot] = useState('morning'); // 'morning', 'noon', 'evening'
   const [balasoreLocation, setBalasoreLocation] = useState('Sahadevkhunta');
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [tempLocation, setTempLocation] = useState('Sahadevkhunta');
+
+  const mapContainerRef = useRef(null);
+  const leafletMapRef = useRef(null);
+
+  // Local Balasore Landmark Locations with Coordinates
+  const BALASORE_MAP_LOCATIONS = [
+    { name: 'Sahadevkhunta', lat: 21.4880, lng: 86.9240, desc: 'Central Transport & Residential Hub' },
+    { name: 'OT Road', lat: 21.4910, lng: 86.9280, desc: 'Main Commercial Arterial Corridor' },
+    { name: 'Station Square (Baleswar)', lat: 21.4975, lng: 86.9310, desc: 'Railway Station & Market Area' },
+    { name: 'Kuruda', lat: 21.5120, lng: 86.9450, desc: 'NH-16 Bypass & Industrial Zone' },
+    { name: 'Mallikashpur', lat: 21.4820, lng: 86.9180, desc: 'South Balasore Suburb' },
+    { name: 'Balgopalpur', lat: 21.5300, lng: 86.9600, desc: 'North Balasore Commercial Area' },
+    { name: 'Fakir Mohan Golai', lat: 21.4950, lng: 86.9380, desc: 'FM College & Cultural Hub' },
+    { name: 'Somanathpur', lat: 21.4750, lng: 86.9550, desc: 'Industrial Estate & River Catch' },
+    { name: 'Remuna', lat: 21.5270, lng: 86.8720, desc: 'Historic Shrine & Heritage Zone' }
+  ];
+
+  // Initialize interactive Leaflet map when map modal opens
+  useEffect(() => {
+    if (!showMapModal) return;
+
+    setTempLocation(balasoreLocation);
+
+    if (!document.getElementById('leaflet-css-cdn')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css-cdn';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+
+    const initMap = () => {
+      if (!window.L || !mapContainerRef.current) return;
+
+      if (leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+      }
+
+      const activeLoc = BALASORE_MAP_LOCATIONS.find(l => l.name === (tempLocation || balasoreLocation)) || BALASORE_MAP_LOCATIONS[0];
+      
+      const map = window.L.map(mapContainerRef.current, {
+        center: [activeLoc.lat, activeLoc.lng],
+        zoom: 13,
+        zoomControl: false
+      });
+
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      window.L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      BALASORE_MAP_LOCATIONS.forEach(loc => {
+        const marker = window.L.marker([loc.lat, loc.lng]).addTo(map);
+        marker.bindTooltip(loc.name, { permanent: loc.name === activeLoc.name, direction: 'top' });
+        marker.on('click', () => {
+          setTempLocation(loc.name);
+          map.panTo([loc.lat, loc.lng]);
+        });
+      });
+
+      map.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        let closest = BALASORE_MAP_LOCATIONS[0];
+        let minDist = Infinity;
+        BALASORE_MAP_LOCATIONS.forEach(loc => {
+          const dist = Math.hypot(loc.lat - lat, loc.lng - lng);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = loc;
+          }
+        });
+        setTempLocation(closest.name);
+        map.panTo([closest.lat, closest.lng]);
+      });
+
+      leafletMapRef.current = map;
+    };
+
+    if (!window.L) {
+      if (!document.getElementById('leaflet-js-cdn')) {
+        const script = document.createElement('script');
+        script.id = 'leaflet-js-cdn';
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.onload = () => setTimeout(initMap, 150);
+        document.body.appendChild(script);
+      } else {
+        const checkInterval = setInterval(() => {
+          if (window.L) {
+            clearInterval(checkInterval);
+            initMap();
+          }
+        }, 100);
+      }
+    } else {
+      setTimeout(initMap, 150);
+    }
+
+    return () => {
+      if (leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+      }
+    };
+  }, [showMapModal]);
+
+  const handleUseGPSLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        let closest = BALASORE_MAP_LOCATIONS[0];
+        let minDist = Infinity;
+        BALASORE_MAP_LOCATIONS.forEach(loc => {
+          const dist = Math.hypot(loc.lat - latitude, loc.lng - longitude);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = loc;
+          }
+        });
+        setTempLocation(closest.name);
+        if (leafletMapRef.current) {
+          leafletMapRef.current.panTo([closest.lat, closest.lng]);
+        }
+      },
+      (err) => {
+        console.warn('GPS Error:', err);
+        alert('Could not access GPS location. Please select from the map or list.');
+      }
+    );
+  };
+
+  const confirmLocationSelection = () => {
+    setBalasoreLocation(tempLocation);
+    setShowMapModal(false);
+  };
   
   // Order states
   const [orders, setOrders] = useState([]);
@@ -544,9 +687,15 @@ export default function App() {
             <div className="home-header">
               <div className="user-info">
                 <span className="user-greeting">Namaskar, {user?.name}</span>
-                <span className="user-location">
+                <span 
+                  className="user-location" 
+                  onClick={() => setShowMapModal(true)} 
+                  style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  title="Click to select location on map"
+                >
                   <MapPin />
-                  {balasoreLocation}, Baleswar
+                  <span>{balasoreLocation}, Baleswar</span>
+                  <ChevronRight size={14} style={{ opacity: 0.7 }} />
                 </span>
               </div>
               <button onClick={handleLogout} className="avatar">
@@ -766,7 +915,16 @@ export default function App() {
                   <span className="checkout-section-header">Delivery Destination (Balasore Only)</span>
                   <div className="address-box glass-panel">
                     <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label>Select Balasore Locality</label>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <label>Select Balasore Locality</label>
+                        <button 
+                          type="button" 
+                          onClick={() => setShowMapModal(true)} 
+                          style={{ background: 'none', border: 'none', color: '#0ea5e9', fontSize: '11px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <MapPin size={12} /> Pick on Map
+                        </button>
+                      </div>
                       <select 
                         className="glass-input" 
                         value={balasoreLocation} 
@@ -1298,6 +1456,91 @@ export default function App() {
                 Cancel / Fail Payment
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Location Map Picker Modal */}
+      {showMapModal && (
+        <div className="modal-overlay" onClick={() => setShowMapModal(false)}>
+          <div className="modal-content glass-panel" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '380px', width: '92%', padding: '20px' }}>
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div>
+                <h3 style={{ fontSize: '18px' }}>Select Location on Map</h3>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Balasore City & Outskirts</span>
+              </div>
+              <button className="circle-btn" onClick={() => setShowMapModal(false)} style={{ width: '32px', height: '32px' }}>
+                ✕
+              </button>
+            </div>
+
+            {/* Leaflet Map Box */}
+            <div 
+              ref={mapContainerRef} 
+              style={{ 
+                width: '100%', 
+                height: '210px', 
+                borderRadius: '14px', 
+                overflow: 'hidden', 
+                marginBottom: '14px',
+                border: '1px solid var(--border-color)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.4)'
+              }}
+            ></div>
+
+            {/* Current Selected Location Indicator & GPS Button */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', padding: '10px 14px', borderRadius: '12px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MapPin size={18} style={{ color: 'var(--accent-coral)' }} />
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: '700' }}>{tempLocation}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+                    {BALASORE_MAP_LOCATIONS.find(l => l.name === tempLocation)?.desc || 'Balasore Locality'}
+                  </div>
+                </div>
+              </div>
+              <button 
+                type="button"
+                onClick={handleUseGPSLocation}
+                style={{ 
+                  background: 'rgba(14, 165, 233, 0.15)', 
+                  border: '1px solid rgba(14, 165, 233, 0.3)', 
+                  color: '#0ea5e9', 
+                  fontSize: '11px', 
+                  fontWeight: '600', 
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                📍 Use GPS
+              </button>
+            </div>
+
+            {/* Balasore Neighborhood Quick Select Chips */}
+            <div style={{ fontSize: '12px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-secondary)' }}>
+              Quick Select Localities
+            </div>
+            <div className="map-chips-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '110px', overflowY: 'auto', marginBottom: '16px' }}>
+              {BALASORE_MAP_LOCATIONS.map(loc => (
+                <button
+                  key={loc.name}
+                  type="button"
+                  className={`category-chip ${tempLocation === loc.name ? 'active' : ''}`}
+                  onClick={() => setTempLocation(loc.name)}
+                  style={{ padding: '6px 10px', fontSize: '11px' }}
+                >
+                  {loc.name}
+                </button>
+              ))}
+            </div>
+
+            <button className="btn-primary" onClick={confirmLocationSelection} style={{ width: '100%' }}>
+              Confirm Location
+            </button>
           </div>
         </div>
       )}

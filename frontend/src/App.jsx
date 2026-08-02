@@ -804,10 +804,6 @@ export default function App() {
               <History />
               <span>Orders</span>
             </button>
-            <button className={`nav-item ${view === 'admin' ? 'active' : ''}`} onClick={() => setView('admin')}>
-              <Database />
-              <span>DB Admin</span>
-            </button>
           </div>
         </>
       )}
@@ -1091,10 +1087,6 @@ export default function App() {
             <button className="nav-item active" onClick={() => setView('history')}>
               <History />
               <span>Orders</span>
-            </button>
-            <button className={`nav-item ${view === 'admin' ? 'active' : ''}`} onClick={() => setView('admin')}>
-              <Database />
-              <span>DB Admin</span>
             </button>
           </div>
         </>
@@ -1463,13 +1455,25 @@ export default function App() {
       {/* Interactive Location Map Picker Modal */}
       {showMapModal && (
         <div className="modal-overlay" onClick={() => setShowMapModal(false)}>
-          <div className="modal-content glass-panel" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '380px', width: '92%', padding: '20px' }}>
-            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+          <div 
+            className="modal-content glass-panel" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              maxWidth: '390px', 
+              width: '92%', 
+              maxHeight: '82vh',
+              overflowY: 'auto',
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
               <div>
-                <h3 style={{ fontSize: '18px' }}>Select Location on Map</h3>
-                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Balasore City & Outskirts</span>
+                <h3 style={{ fontSize: '17px' }}>Select Location on Map</h3>
+                <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>Balasore City & Outskirts</span>
               </div>
-              <button className="circle-btn" onClick={() => setShowMapModal(false)} style={{ width: '32px', height: '32px' }}>
+              <button className="circle-btn" onClick={() => setShowMapModal(false)} style={{ width: '30px', height: '30px', fontSize: '14px' }}>
                 ✕
               </button>
             </div>
@@ -1479,19 +1483,20 @@ export default function App() {
               ref={mapContainerRef} 
               style={{ 
                 width: '100%', 
-                height: '210px', 
-                borderRadius: '14px', 
+                height: '165px', 
+                borderRadius: '12px', 
                 overflow: 'hidden', 
-                marginBottom: '14px',
+                marginBottom: '10px',
                 border: '1px solid var(--border-color)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.4)'
+                boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+                flexShrink: 0
               }}
             ></div>
 
             {/* Current Selected Location Indicator & GPS Button */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', padding: '10px 14px', borderRadius: '12px', marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.05)', padding: '8px 12px', borderRadius: '10px', marginBottom: '10px', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MapPin size={18} style={{ color: 'var(--accent-coral)' }} />
+                <MapPin size={16} style={{ color: 'var(--accent-coral)', flexShrink: 0 }} />
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: '700' }}>{tempLocation}</div>
                   <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
@@ -1508,12 +1513,13 @@ export default function App() {
                   color: '#0ea5e9', 
                   fontSize: '11px', 
                   fontWeight: '600', 
-                  padding: '6px 10px',
+                  padding: '5px 9px',
                   borderRadius: '8px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '4px',
+                  flexShrink: 0
                 }}
               >
                 📍 Use GPS
@@ -1521,26 +1527,33 @@ export default function App() {
             </div>
 
             {/* Balasore Neighborhood Quick Select Chips */}
-            <div style={{ fontSize: '12px', fontWeight: '600', marginBottom: '8px', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '11px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-secondary)', flexShrink: 0 }}>
               Quick Select Localities
             </div>
-            <div className="map-chips-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '110px', overflowY: 'auto', marginBottom: '16px' }}>
+            <div className="map-chips-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', maxHeight: '75px', overflowY: 'auto', marginBottom: '12px', flexShrink: 0 }}>
               {BALASORE_MAP_LOCATIONS.map(loc => (
                 <button
                   key={loc.name}
                   type="button"
                   className={`category-chip ${tempLocation === loc.name ? 'active' : ''}`}
                   onClick={() => setTempLocation(loc.name)}
-                  style={{ padding: '6px 10px', fontSize: '11px' }}
+                  style={{ padding: '5px 9px', fontSize: '11px' }}
                 >
                   {loc.name}
                 </button>
               ))}
             </div>
 
-            <button className="btn-primary" onClick={confirmLocationSelection} style={{ width: '100%' }}>
-              Confirm Location
-            </button>
+            {/* Always Visible Primary Confirm Button */}
+            <div style={{ marginTop: 'auto', paddingTop: '6px', flexShrink: 0 }}>
+              <button 
+                className="btn-primary" 
+                onClick={confirmLocationSelection} 
+                style={{ width: '100%', padding: '12px', fontSize: '14px', fontWeight: '700' }}
+              >
+                Confirm Location: {tempLocation}
+              </button>
+            </div>
           </div>
         </div>
       )}

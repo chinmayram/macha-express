@@ -44,6 +44,18 @@ export default function App() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [mockPaymentModal, setMockPaymentModal] = useState(null); // stores order payment context for mock UI
   const [adminTab, setAdminTab] = useState('orders'); // 'orders', 'products', 'users'
+  const [currentTime, setCurrentTime] = useState('');
+
+  // Live Status Bar System Clock
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+    };
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Local Balasore Landmark Locations
   const BALASORE_NEIGHBORHOODS = [
@@ -443,7 +455,7 @@ export default function App() {
     <div className="app-container">
       {/* Android Device Status Bar */}
       <div className="status-bar">
-        <span className="status-time">11:54 AM</span>
+        <span className="status-time">{currentTime || '11:54 AM'}</span>
         <div className="status-bar-right">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5.5 13.5a9 9 0 0 1 13 0M1.5 9.5a15 15 0 0 1 21 0"/></svg>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="12" x="3" y="6" rx="2"/><path d="M12 10v4M12 6V3"/></svg>

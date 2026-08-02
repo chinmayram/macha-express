@@ -35,6 +35,7 @@ export default function App() {
   const [deliverySlot, setDeliverySlot] = useState('morning'); // 'morning', 'noon', 'evening'
   const [balasoreLocation, setBalasoreLocation] = useState('Sahadevkhunta');
   const [showMapModal, setShowMapModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [tempLocation, setTempLocation] = useState('Sahadevkhunta');
 
   const mapContainerRef = useRef(null);
@@ -698,7 +699,7 @@ export default function App() {
                   <ChevronRight size={14} style={{ opacity: 0.7 }} />
                 </span>
               </div>
-              <button onClick={handleLogout} className="avatar">
+              <button onClick={() => setShowProfileModal(true)} className="avatar" title="View Profile, Orders & Support">
                 {user?.name ? user.name[0].toUpperCase() : 'U'}
               </button>
             </div>
@@ -1554,6 +1555,181 @@ export default function App() {
                 Confirm Location: {tempLocation}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Profile, Orders, Refunds & Support Modal */}
+      {showProfileModal && (
+        <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
+          <div 
+            className="modal-content glass-panel" 
+            onClick={(e) => e.stopPropagation()} 
+            style={{ 
+              maxWidth: '390px', 
+              width: '92%', 
+              maxHeight: '85vh',
+              overflowY: 'auto',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+          >
+            {/* Header */}
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexShrink: 0 }}>
+              <h3 style={{ fontSize: '18px' }}>My Account & Support</h3>
+              <button className="circle-btn" onClick={() => setShowProfileModal(false)} style={{ width: '30px', height: '30px', fontSize: '14px' }}>
+                ✕
+              </button>
+            </div>
+
+            {/* Profile Info Card */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', background: 'rgba(255,255,255,0.04)', padding: '14px', borderRadius: '16px', border: '1px solid var(--border-color)', marginBottom: '16px', flexShrink: 0 }}>
+              <div className="avatar" style={{ width: '50px', height: '50px', fontSize: '20px', flexShrink: 0 }}>
+                {user?.name ? user.name[0].toUpperCase() : 'U'}
+              </div>
+              <div style={{ overflow: 'hidden' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>{user?.name || 'Macha Express User'}</h4>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Phone size={12} /> +91 {user?.phone || '8917200000'}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                  📍 {balasoreLocation}, Baleswar
+                </div>
+              </div>
+            </div>
+
+            {/* Orders Summary (Current & Past) */}
+            <div style={{ marginBottom: '16px', flexShrink: 0 }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Order History & Live Status ({orders.length})
+              </div>
+
+              {orders.length === 0 ? (
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '12px', textAlign: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  No active or past orders found.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {orders.slice(0, 2).map(order => (
+                    <div 
+                      key={order.id} 
+                      style={{ 
+                        background: 'rgba(15, 23, 42, 0.8)', 
+                        padding: '12px', 
+                        borderRadius: '12px', 
+                        border: '1px solid var(--border-color)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setView('tracking');
+                        setShowProfileModal(false);
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '700' }}>Order #{order.id}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                          ₹{order.total_amount} • {order.items?.length || 1} items
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                        <span className={`history-status-badge ${order.status.toLowerCase()}`}>
+                          {order.status.replace(/_/g, ' ')}
+                        </span>
+                        <span style={{ fontSize: '10px', color: '#0ea5e9', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          Track <ChevronRight size={10} />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {orders.length > 2 && (
+                    <button 
+                      onClick={() => { setView('history'); setShowProfileModal(false); }}
+                      style={{ background: 'none', border: 'none', color: '#0ea5e9', fontSize: '12px', fontWeight: '600', cursor: 'pointer', textAlign: 'center', padding: '4px' }}
+                    >
+                      View all {orders.length} orders →
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Refund Status Card */}
+            <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '14px', borderRadius: '14px', marginBottom: '16px', flexShrink: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span style={{ fontSize: '13px', fontWeight: '700', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <ShieldCheck size={16} /> Refund & Quality Guarantee
+                </span>
+                <span style={{ fontSize: '10px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '2px 6px', borderRadius: '6px', fontWeight: '700' }}>
+                  0 Active Refunds
+                </span>
+              </div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', lineHeight: '1.4', margin: 0 }}>
+                100% freshness guarantee on river & sea catch in Balasore. Instant refund credited within 24 hours if quality is degraded.
+              </p>
+            </div>
+
+            {/* Customer Care & Helpline Support */}
+            <div style={{ marginBottom: '20px', flexShrink: 0 }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Customer Care & Support
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <a 
+                  href="tel:06782260100" 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '6px', 
+                    background: 'rgba(255,255,255,0.05)', 
+                    border: '1px solid var(--border-color)', 
+                    color: 'var(--text-primary)', 
+                    padding: '10px', 
+                    borderRadius: '12px', 
+                    fontSize: '12px', 
+                    fontWeight: '600', 
+                    textDecoration: 'none' 
+                  }}
+                >
+                  <Phone size={14} style={{ color: '#10b981' }} /> Call Helpline
+                </a>
+                <a 
+                  href="https://wa.me/919876543210?text=Hello%20Macha%20Express%20Balasore%20Support" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: '6px', 
+                    background: 'rgba(16, 185, 129, 0.15)', 
+                    border: '1px solid rgba(16, 185, 129, 0.3)', 
+                    color: '#10b981', 
+                    padding: '10px', 
+                    borderRadius: '12px', 
+                    fontSize: '12px', 
+                    fontWeight: '600', 
+                    textDecoration: 'none' 
+                  }}
+                >
+                  💬 WhatsApp Support
+                </a>
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <button 
+              className="btn-secondary" 
+              onClick={() => { setShowProfileModal(false); handleLogout(); }}
+              style={{ width: '100%', padding: '12px', color: '#fb7185', borderColor: 'rgba(251, 113, 133, 0.3)', marginTop: 'auto', flexShrink: 0 }}
+            >
+              Log Out Account
+            </button>
           </div>
         </div>
       )}

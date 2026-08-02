@@ -701,6 +701,51 @@ h1, h2, h3, h4 {
   box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
 }
 
+.card-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--primary-gradient);
+  border-radius: 10px;
+  padding: 2px 4px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  animation: popScale 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-qty-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.card-qty-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.08);
+}
+
+.card-qty-btn:active {
+  transform: scale(0.92);
+}
+
+.card-qty-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  padding: 0 4px;
+  min-width: 24px;
+  text-align: center;
+  font-family: var(--font-title);
+  user-select: none;
+}
+
 /* 4. Product Details View */
 .back-btn-container {
   padding: 16px 20px;

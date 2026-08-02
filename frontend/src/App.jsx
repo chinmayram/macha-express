@@ -578,27 +578,51 @@ export default function App() {
             </div>
 
             <div className="products-grid">
-              {filteredProducts.map(p => (
-                <div key={p.id} className="product-card" onClick={() => openProductDetail(p)}>
-                  <div className="product-image-container">
-                    <div className={`fish-art ${p.image_url}`}></div>
-                    <span className="stock-tag">Fresh</span>
-                  </div>
-                  <div className="product-info">
-                    <h3 className="product-name">{p.name}</h3>
-                    <p className="product-desc">{p.description}</p>
-                    <div className="product-footer">
-                      <div className="price-tag">
-                        ₹{p.price_per_kg}
-                        <span className="price-unit">/kg</span>
+              {filteredProducts.map(p => {
+                const cartItem = cart.find(item => item.product.id === p.id);
+                const qty = cartItem ? cartItem.quantity_kg : 0;
+                return (
+                  <div key={p.id} className="product-card" onClick={() => openProductDetail(p)}>
+                    <div className="product-image-container">
+                      <div className={`fish-art ${p.image_url}`}></div>
+                      <span className="stock-tag">Fresh</span>
+                    </div>
+                    <div className="product-info">
+                      <h3 className="product-name">{p.name}</h3>
+                      <p className="product-desc">{p.description}</p>
+                      <div className="product-footer">
+                        <div className="price-tag">
+                          ₹{p.price_per_kg}
+                          <span className="price-unit">/kg</span>
+                        </div>
+                        {qty > 0 ? (
+                          <div className="card-qty-control" onClick={(e) => e.stopPropagation()}>
+                            <button 
+                              className="card-qty-btn" 
+                              onClick={(e) => { e.stopPropagation(); updateCartQuantity(p.id, -0.5); }}
+                              title="Decrease quantity"
+                            >
+                              <Minus size={13} />
+                            </button>
+                            <span className="card-qty-num">{qty}kg</span>
+                            <button 
+                              className="card-qty-btn" 
+                              onClick={(e) => { e.stopPropagation(); updateCartQuantity(p.id, 0.5); }}
+                              title="Increase quantity"
+                            >
+                              <Plus size={13} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button className="add-btn" onClick={(e) => addToCartDirect(p, e)}>
+                            <Plus size={16} />
+                          </button>
+                        )}
                       </div>
-                      <button className="add-btn" onClick={(e) => addToCartDirect(p, e)}>
-                        <Plus size={16} />
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

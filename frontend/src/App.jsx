@@ -1591,7 +1591,7 @@ export default function App() {
               <div style={{ overflow: 'hidden' }}>
                 <h4 style={{ fontSize: '15px', fontWeight: '800', margin: 0, color: 'var(--text-primary)' }}>{user?.name || 'Macha Express User'}</h4>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Phone size={12} /> +91 {user?.phone || '8917200000'}
+                  <Phone size={12} /> +91 {user?.phone || '7978086750'}
                 </div>
                 <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                   📍 {balasoreLocation}, Baleswar
@@ -1680,7 +1680,7 @@ export default function App() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 <a 
-                  href="tel:06782260100" 
+                  href="tel:7978086750" 
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -1696,10 +1696,10 @@ export default function App() {
                     textDecoration: 'none' 
                   }}
                 >
-                  <Phone size={14} style={{ color: '#10b981' }} /> Call Helpline
+                  <Phone size={14} style={{ color: '#10b981' }} /> Call 7978086750
                 </a>
                 <a 
-                  href="https://wa.me/919876543210?text=Hello%20Macha%20Express%20Balasore%20Support" 
+                  href="https://wa.me/917978086750?text=Hello%20Macha%20Express%20Balasore%20Support" 
                   target="_blank" 
                   rel="noreferrer"
                   style={{ 

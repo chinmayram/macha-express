@@ -573,6 +573,7 @@ export default function App() {
           created_at: new Date().toISOString(),
           items: cart.map(item => ({
             name: item.product.name,
+            product_name: item.product.name,
             quantity_kg: item.quantity_kg,
             price: item.product.price_per_kg
           }))
@@ -1059,7 +1060,7 @@ export default function App() {
                     </div>
 
                     <div className="history-items-summary">
-                      {order.items?.map(item => `${item.product_name} (${item.quantity_kg}kg)`).join(', ')}
+                      {order.items?.map(item => `${item.product_name || item.name || item.product?.name || 'Fresh Catch'} (${item.quantity_kg}kg)`).join(', ')}
                     </div>
 
                     <div className="history-footer">
@@ -1165,7 +1166,7 @@ export default function App() {
               <div className="tracking-items">
                 {selectedOrder.items?.map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-                    <span>{item.product_name} x {item.quantity_kg}kg</span>
+                    <span>{item.product_name || item.name || item.product?.name || 'Fresh Catch'} x {item.quantity_kg}kg</span>
                     <span>₹{item.price * item.quantity_kg}</span>
                   </div>
                 ))}
@@ -1633,7 +1634,7 @@ export default function App() {
                       <div>
                         <div style={{ fontSize: '13px', fontWeight: '700' }}>Order #{order.id}</div>
                         <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                          ₹{order.total_amount} • {order.items?.length || 1} items
+                          ₹{order.total_amount} • {order.items?.map(i => i.product_name || i.name || i.product?.name).filter(Boolean).join(', ') || `${order.items?.length || 1} items`}
                         </div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
